@@ -1,22 +1,22 @@
 import cv2
 
-# 讀取影像
+# 載入預訓練的人臉檢測器
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+# 讀取圖片
 image = cv2.imread('nono_han.jpg')
 
-# 假設這裡有一個訓練好的目標檢測模型，可以使用模型來檢測影像中的物體
-# 在這裡假設檢測結果存儲在detections列表中，每個檢測結果包含物體的類別、分數和Bounding Box的位置信息
+# 將圖片轉換為灰度
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# 假設 detections 是一個列表，每個元素是一個 tuple，包含了 (class_id, confidence, x, y, w, h)
-# class_id 是物體的類別，confidence 是檢測分數，(x, y) 是Bounding Box的左上角座標，w 和 h 是寬度和高度
+# 使用人臉檢測器檢測人臉
+faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-# 繪製Bounding Box
-for detection in detections:
-    class_id, confidence, x, y, w, h = detection
-    color = (0, 255, 0)  # Bounding Box的顏色，這裡選擇綠色
-    thickness = 2  # Bounding Box的線條寬度
-    cv2.rectangle(image, (x, y), (x + w, y + h), color, thickness)
+# 在圖片上繪製人臉標註
+for (x, y, w, h) in faces:
+    cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-# 顯示標註後的影像
-cv2.imshow('Annotated Image', image)
+# 顯示標註後的圖片
+cv2.imshow('Detected Faces', image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
